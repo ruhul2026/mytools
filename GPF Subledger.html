@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>GPF Master Subsidiary Ledger (Dynamic Years)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #f4f4f9; color: #333; }
+        .container { background: white; max-width: 1000px; margin: auto; padding: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; }
+        .setup-box { background: #1a237e; color: white; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+        .setup-box h3 { margin-top: 0; border-bottom: 1px solid #ffffff55; padding-bottom: 10px; }
+        .input-group { display: inline-block; margin-right: 20px; margin-bottom: 10px; }
+        .input-group label { display: block; font-size: 12px; margin-bottom: 5px; }
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { padding: 10px 20px; background: #ff9800; border: none; color: white; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.3s; margin-top: 5px; }
+        button:hover { background: #f57c00; }
+        
+        .year-bulk-fill { 
+            background: #f1f8e9; 
+            padding: 10px; 
+            border: 1px solid #c5e1a5; 
+            margin-bottom: 15px; 
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .year-bulk-fill strong { color: #33691e; font-size: 14px; }
+        
+        .ledger-page { page-break-after: always; margin-top: 40px; border-top: 2px solid #1a237e; padding-top: 30px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+        th { background: #eeeeee; }
+        
+        .val-input { width: 90%; border: none; text-align: center; font-size: 14px; outline: none; background: transparent; }
+        .val-input:focus { background: #fffde7; border-bottom: 1px solid #1a237e; }
+        
+        .summary-table { width: 350px; float: right; border: 2px solid #000; }
+        .summary-table td { text-align: left; padding: 8px 12px; }
+        .summary-table tr.bold { font-weight: bold; background: #f5f5f5; }
+        
+        .no-print { display: block; }
+        @media print { 
+            .no-print { display: none; } 
+            .container { box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
+            .ledger-page { border-top: none; }
+        }
+        h2, h3, h4 { text-align: center; margin: 5px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="setup-box no-print">
+        <h3>GPF লেজার জেনারেটর (ডাইনামিক অর্থ বছর)</h3>
+        <div class="input-group">
+            <label>শুরুর অর্থ বছর (YYYY-YY)</label>
+            <input type="text" id="startYear" value="2010-11" placeholder="2010-11" style="width: 100px;">
+        </div>
+        <div class="input-group">
+            <label>শেষের অর্থ বছর</label>
+            <select id="endYear" style="width: 120px;">
+                <!-- Dynamically populated via JS up to current fiscal year -->
+            </select>
+        </div>
+        <div class="input-group">
+            <label>শুরুর ব্যালেন্স (Opening)</label>
+            <input type="number" id="initBalance" value="0" style="width: 120px;">
+        </div>
+        <button onclick="generateLedgers()">লেজার তৈরি করুন</button>
+    </div>
+
+    <div id="ledgersContainer"></div>
+</div>
+
+<script>
+// অর্থ বছরের শেষ বছর ডাইনামিকালি সেট করার ফাংশন (বর্তমান সময় অনুযায়ী)
+function populateEndYears() {
+    const select = document.getElementById('endYear');
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth(); // 0 = Jan, 5 = June, 6 = July
+    
+    // যদি বর্তমান মাস জুলাই বা তার পরে হয়, তবে নতুন অর্থ বছর শুরু হয়েছে
+    const maxStartYear = currentMonth >= 6 ? currentYear : currentYear - 1;
+    
+    for (let year = maxStartYear; year >= 1983; year--) {
+        const fiscalYearStr = `${year}-${(year + 1).toString().slice(-2)}`;
+        const option = document.createElement('option');
+        option.value = year;
+        option.text = fiscalYearStr;
+        if (year === maxStartYear) option.selected = true; // বর্তমান অর্থ বছর ডিফল্ট সিলেক্ট থাকবে
+        select.appendChild(option);
+    }
+}
+
+function getInterestRate(year) {
+    if (year >= 1983 && year < 1992) return 14.5;
+    if (year >= 1992 && year < 2000) return 13.5;
+    if (year >= 2000 && year < 2002) return 13.0;
+    if (year >= 2002 && year < 2012) return 12.5;
+    if (year >= 2012) return 13.0;
+    return 13.0;
+}
+
+function generateLedgers() {
+    const startYearInput = document.getElementById('startYear').value;
+    const endYearSelected = parseInt(document.getElementById('endYear').value);
+    let currentBalance = parseFloat(document.getElementById('initBalance').value) || 0;
+    
+    const [startYearYear] = startYearInput.split('-').map(Number);
+    const container = document.getElementById('ledgersContainer');
+    container.innerHTML = '';
+
+    const months = ["July", "August", "September", "October", "November", "December", "January", "February", "March", "April", "May", "June (pre)"];
+
+    for (let year = startYearYear; year <= endYearSelected; year++) {
+        const ratePercent = getInterestRate(year);
+        const rate = ratePercent / 100;
+        const fiscalYear = `${year}-${(year + 1).toString().slice(-2)}`;
+        const pageId = `page-${year}`;
+        
+        let pageHtml = `
+            <div class="ledger-page" id="${pageId}" data-year="${year}">
+                <div class="year-bulk-fill no-print">
+                    <strong>এই অর্থ বছরের জন্য অটো-ফিল (${fiscalYear}):</strong>
+                    <input type="number" class="y-bulk-sub" placeholder="সাবস্ক্রিপশন" style="width: 100px;">
+                    <input type="number" class="y-bulk-ref" placeholder="রিফান্ড" style="width: 100px;">
+                    <button onclick="applyYearlyBulk('${pageId}')" style="background: #4caf50; padding: 5px 10px; font-size: 12px;">Apply to this Year</button>
+                </div>
+                <h2>Subsidiary Ledger</h2>
+                <h4>Fiscal Year: ${fiscalYear}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="25%">Month</th>
+                            <th width="25%">Subscription (cr)</th>
+                            <th width="25%">Refund (cr)</th>
+                            <th width="25%">Withdrawal (dr)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="ledger-body">`;
+
+        months.forEach((m, idx) => {
+            pageHtml += `
+                <tr>
+                    <td style="text-align:left; padding-left:15px;">${idx+1 < 10 ? '0'+(idx+1) : idx+1} ${m}</td>
+                    <td><input type="number" class="val-input val-sub" value="0" oninput="triggerRecalculate()"></td>
+                    <td><input type="number" class="val-input val-ref" value="0" oninput="triggerRecalculate()"></td>
+                    <td><input type="number" class="val-input val-with" value="0" oninput="triggerRecalculate()"></td>
+                </tr>`;
+        });
+
+        pageHtml += `
+                    </tbody>
+                    <tr style="font-weight:bold; background:#f9f9f9;">
+                        <td>Total</td>
+                        <td class="total-sub">0.00</td>
+                        <td class="total-ref">0.00</td>
+                        <td class="total-with">0.00</td>
+                    </tr>
+                </table>
+                <table class="summary-table">
+                    <tr><td>Opening Balance</td><td align="right" class="sum-opening">${currentBalance.toFixed(2)}</td></tr>
+                    <tr><td>Subscription & Refund</td><td align="right" class="sum-subref">0.00</td></tr>
+                    <tr><td>Profit (${ratePercent}%)</td><td align="right" class="sum-profit">0.00</td></tr>
+                    <tr class="bold"><td>Total</td><td align="right" class="sum-total">0.00</td></tr>
+                    <tr><td>Withdrawal</td><td align="right" class="sum-with">0.00</td></tr>
+                    <tr class="bold" style="background:#eee;"><td>Closing Balance</td><td align="right" class="sum-closing">0.00</td></tr>
+                </table>
+                <div style="clear:both;"></div>
+            </div>`;
+        
+        container.innerHTML += pageHtml;
+        const result = calculatePageData(pageId, currentBalance, rate);
+        currentBalance = result.closing;
+    }
+}
+
+function applyYearlyBulk(pageId) {
+    const page = document.getElementById(pageId);
+    const sub = page.querySelector('.y-bulk-sub').value || 0;
+    const ref = page.querySelector('.y-bulk-ref').value || 0;
+    
+    page.querySelectorAll('.val-sub').forEach(el => el.value = sub);
+    page.querySelectorAll('.val-ref').forEach(el => el.value = ref);
+    
+    triggerRecalculate();
+}
+
+function calculatePageData(pageId, opening, rate) {
+    const page = document.getElementById(pageId);
+    if (!page) return { closing: opening };
+    
+    const subInputs = page.querySelectorAll('.val-sub');
+    const refInputs = page.querySelectorAll('.val-ref');
+    const withInputs = page.querySelectorAll('.val-with');
+    
+    let totalSub = 0, totalRef = 0, totalWith = 0;
+    let runningBalance = opening;
+    let totalInterest = 0;
+
+    for(let i=0; i<12; i++) {
+        let s = parseFloat(subInputs[i].value) || 0;
+        let r = parseFloat(refInputs[i].value) || 0;
+        let w = parseFloat(withInputs[i].value) || 0;
+        
+        totalSub += s;
+        totalRef += r;
+        totalWith += w;
+        
+        runningBalance += (s + r - w);
+        totalInterest += (runningBalance * (rate / 12));
+    }
+
+    const profit = Math.round(totalInterest);
+    const subRef = totalSub + totalRef;
+    const totalBeforeWith = opening + subRef + profit;
+    const closing = totalBeforeWith - totalWith;
+
+    page.querySelector('.total-sub').innerText = totalSub.toFixed(2);
+    page.querySelector('.total-ref').innerText = totalRef.toFixed(2);
+    page.querySelector('.total-with').innerText = totalWith.toFixed(2);
+    page.querySelector('.sum-subref').innerText = subRef.toFixed(2);
+    page.querySelector('.sum-profit').innerText = profit.toFixed(2);
+    page.querySelector('.sum-total').innerText = totalBeforeWith.toFixed(2);
+    page.querySelector('.sum-with').innerText = totalWith.toFixed(2);
+    page.querySelector('.sum-closing').innerText = closing.toFixed(2);
+
+    return { closing };
+}
+
+function triggerRecalculate() {
+    const pages = Array.from(document.querySelectorAll('.ledger-page'));
+    let globalOpening = parseFloat(document.getElementById('initBalance').value) || 0;
+    
+    pages.forEach(p => {
+        const year = parseInt(p.getAttribute('data-year'));
+        const rate = getInterestRate(year) / 100;
+        p.querySelector('.sum-opening').innerText = globalOpening.toFixed(2);
+        const result = calculatePageData(p.id, globalOpening, rate);
+        globalOpening = result.closing;
+    });
+}
+
+// পেজ লোড হওয়ার সাথে সাথে ড্রপডাউন লিস্ট তৈরি হবে
+window.onload = populateEndYears;
+</script>
+
+</body>
+</html>
