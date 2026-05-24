@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রফেশনাল খাম প্রিন্টিং সফটওয়্যার (সম্পূর্ণ বাংলাদেশ)</title>
+    <style>
+        body {
+            font-family: 'Kalpurush', SiyamRupali, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+        }
+        
+        /* কন্ট্রোল প্যানেল */
+        .control-panel {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 9.5in;
+            margin: 0 auto 20px auto;
+        }
+        .control-panel h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+        
+        /* সেটিংস বার */
+        .settings-bar {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .settings-bar label {
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .settings-bar input[type="text"], .settings-bar input[type="date"] {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .form-group {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            vertical-align: top;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .form-group select, .form-group input {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 220px;
+            font-family: inherit;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* খামের মূল আকার */
+        .envelope-container {
+            width: 9.5in;
+            height: 4.125in;
+            background-color: white;
+            margin: 0 auto;
+            padding: 0.6in;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        /* স্মারক, তারিখ ও রেজিস্ট্রি সেকশন */
+        .header-section {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 40px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        
+        .memo-date-wrapper {
+            display: flex;
+            gap: 30px; 
+            align-items: center;
+        }
+
+        /* রেজিস্ট্রি ব্যাজ */
+        .registry-badge {
+            border: 2px solid #000;
+            padding: 4px 12px;
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .input-field {
+            border: none;
+            border-bottom: 1px dotted #000;
+            outline: none;
+            font-family: inherit;
+            font-size: 15px;
+            background: transparent;
+        }
+        .memo-input { width: 220px; }
+        .date-display { 
+            display: inline-block; 
+            min-width: 120px; 
+            border-bottom: 1px dotted #000; 
+            padding-bottom: 2px;
+        }
+
+        .address-section {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .sender, .recipient {
+            width: 45%;
+        }
+        .recipient {
+            border: 1px dashed #ccc;
+            padding: 10px;
+            min-height: 120px;
+        }
+        .title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        
+        /* লোগো */
+        .sender-logo {
+            width: 60px;
+            height: auto;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .attention-box {
+            margin-top: 10px;
+            padding-top: 5px;
+            border-top: 1px dashed #ccc;
+            font-weight: bold;
+        }
+
+        .print-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .print-btn:hover { background-color: #218838; }
+
+        /* প্রিন্ট রুলস */
+        @media print {
+            body { background-color: white; padding: 0; margin: 0; }
+            .control-panel, .print-btn { display: none; }
+            .envelope-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 0.5in;
+                width: 100%;
+                height: auto;
+            }
+            .recipient { border: none; padding: 0; }
+            .input-field, .date-display { border-bottom: none; }
+            .attention-box { border-top: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- কন্ট্রোল প্যানেল -->
+    <div class="control-panel">
+        <h3>খামের সেটিংস ও প্রাপক নির্বাচন</h3>
+        
+        <div class="settings-bar">
+            <label>
+                <input type="checkbox" id="registryCheck" onchange="toggleRegistry()"> রেজিস্ট্রি
+            </label>
+            
+            <label style="border-left: 2px solid #ccc; padding-left: 15px;">
+                <input type="checkbox" id="attentionCheck" onchange="toggleAttention()"> দৃষ্টি আকর্ষণ
+            </label>
+            <input type="text" id="attentionInput" class="hidden" placeholder="কার দৃষ্টি আকর্ষণ? লিখুন" onkeyup="updateAttention()">
+
+            <div style="border-left: 2px solid #ccc; padding-left: 15px; display: flex; align-items: center;">
+                <label for="datePicker" style="margin-right: 10px;">তারিখ:</label>
+                <input type="date" id="datePicker" onchange="updateDate()">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="officeType">অফিসের ধরন</label>
+            <select id="officeType" onchange="handleOfficeChange()">
+                <option value="">-- নির্বাচন করুন --</option>
+                <option value="DCA">ডিভিশনাল কন্ট্রোলার অব একাউন্টস্</option>
+                <option value="CAFO">চিফ একাউন্টস্ এন্ড ফিন্যান্স অফিসার</option>
+                <option value="DAFO">জেলা একাউন্টস্ এন্ড ফিন্যান্স অফিসার</option>
+                <option value="UAO">উপজেলা হিসাবরক্ষণ কর্মকর্তা</option>
+            </select>
+        </div>
+
+        <div class="form-group hidden" id="ministryGroup">
+            <label for="ministryName">মন্ত্রণালয়/বিভাগের নাম</label>
+            <input type="text" id="ministryName" placeholder="যেমন: স্বাস্থ্য মন্ত্রণালয়" onkeyup="generateAddress()">
+        </div>
+
+        <div class="form-group hidden" id="divisionGroup">
+            <label for="divisionSelect">বিভাগ</label>
+            <select id="divisionSelect" onchange="handleDivisionChange()">
+                <option value="">-- বিভাগ নির্বাচন করুন --</option>
+            </select>
+        </div>
+
+        <div class="form-group hidden" id="districtGroup">
+            <label for="districtSelect">জেলা</label>
+            <select id="districtSelect" onchange="handleDistrictChange()">
+                <option value="">-- জেলা নির্বাচন করুন --</option>
+            </select>
+        </div>
+
+        <div class="form-group hidden" id="upazilaGroup">
+            <label for="upazilaSelect">উপজেলা</label>
+            <select id="upazilaSelect" onchange="generateAddress()">
+                <option value="">-- উপজেলা নির্বাচন করুন --</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- খামের লেআউট -->
+    <div class="envelope-container">
+        <div class="header-section">
+            <div class="memo-date-wrapper">
+                <div>স্মারক নং: <input type="text" class="input-field memo-input" placeholder="লিখুন" oninput="this.value = toBengaliDigits(this.value)"></div>
+                <div>তারিখ: <span id="envelopeDate" class="date-display"></span></div>
+            </div>
+            <div id="registryBadge" class="registry-badge hidden">রেজিস্ট্রি</div>
+        </div>
+
+        <div class="address-section">
+            <div class="sender">
+                <img src="file:///C:/Users/RUHUL/Desktop/New%20folder/logo.png" class="sender-logo" alt="লোগো">
+                <div class="title">প্রেরক:</div>
+                <strong>উপজেলা হিসাবরক্ষণ কর্মকর্তার কার্যালয়,</strong><br>
+                বাজিতপুর, কিশোরগঞ্জ।
+            </div>
+
+            <div class="recipient">
+                <div class="title">প্রাপক:</div>
+                <div id="recipientText" contenteditable="true" style="color: #666; min-height: 60px;">
+                    উপরের ড্রপডাউন থেকে নির্বাচন করুন...
+                </div>
+                
+                <div id="attentionWrapper" class="attention-box hidden">
+                    দৃষ্টি আকর্ষণ: <span id="attentionDisplay" contenteditable="true" style="color: #000;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="print-btn" onclick="window.print()">খাম প্রিন্ট করুন</button>
+
+    <script>
+        function toBengaliDigits(str) {
+            const engToBng = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' };
+            return str.replace(/[0-9]/g, match => engToBng[match]);
+        }
+
+        // সম্পূর্ণ বাংলাদেশের বিভাগ, জেলা ও উপজেলার তালিকা
+        const locationData = {
+            "ঢাকা": {
+                "ঢাকা": ["ধামরাই", "দোহার", "কেরানীগঞ্জ", "নবাবগঞ্জ", "সাভার"],
+                "গাজীপুর": [ "কালিয়াকৈর", "কালীগঞ্জ", "কাপাসিয়া", "শ্রীপুর"],
+                "কিশোরগঞ্জ": ["অষ্টগ্রাম", "বাজিতপুর", "ভৈরব", "হোসেনপুর", "ইটনা", "করিমগঞ্জ", "কটিয়াদী", "কুলিয়ারচর", "মিঠামইন", "নিকলী", "পাকুন্দিয়া", "তাড়াইল"],
+                "মানিকগঞ্জ": ["দৌলতপুর", "ঘিওর", "হরিরামপুর",  "সাটুরিয়া", "শিবালয়", "সিংগাইর"],
+                "মুন্সীগঞ্জ": ["গজারিয়া", "লৌহজং", "মুন্সীগঞ্জ সদর", "সিরাজদীখান", "শ্রীনগর", "টংগীবাড়ী"],
+                "নারায়ণগঞ্জ": ["আড়াইহাজার", "সোনারগাঁও", "বন্দর", "নারায়ণগঞ্জ সদর", "রূপগঞ্জ"],
+                "নরসিংদী": ["বেলাবো", "মনোহরদী",  "পলাশ", "রায়পুরা", "শিবপুর"],
+                "টাঙ্গাইল": ["বাসাইল", "ভুয়াপুর", "দেলদুয়ার", "ঘাটাইল", "গোপালপুর", "মধুপুর", "মির্জাপুর", "নাগরপুর", "সখিপুর", "টাঙ্গাইল সদর", "কালিহাতী", "ধনবাড়ী"],
+                "ফরিদপুর": ["আলফাডাঙ্গা", "ভাঙ্গা", "বোয়ালমারী", "চরভদ্রাসন",  "মধুখালী", "সদরপুর", "নগরকান্দা", "সালথা"],
+                "গোপালগঞ্জ": ["গোপালগঞ্জ সদর", "কাশিয়ানী", "কোটালীপাড়া", "মুকসুদপুর", "টুঙ্গিপাড়া"],
+                "মাদারীপুর": ["রাজৈর", "মাদারীপুর সদর", "কালকিনি", "শিবচর", "ডাসার"],
+                "রাজবাড়ী": ["বালিয়াকান্দি", "গোয়ালন্দ", "পাংশা", , "কালুখালী"],
+                "শরীয়তপুর": ["ভেদরগঞ্জ", "ডামুড্যা", "গোসাইরহাট", "নড়িয়া", "জাজিরা"]
+            },
+            "চট্টগ্রাম": {
+                "চট্টগ্রাম": ["আনোয়ারা", "বাঁশখালী", "বোয়ালখালী", "চন্দনাইশ", "ফটিকছড়ি", "হাটহাজারী", "লোহাগাড়া", "মিরসরাই", "পটিয়া", "রাঙ্গুনিয়া", "রাউজান", "সন্দ্বীপ", "সাতকানিয়া", "সীতাকুন্ড", "কর্ণফুলী"],
+                "কক্সবাজার": ["চকরিয়া", "কক্সবাজার সদর", "কুতুবদিয়া", "মহেশখালী", "রামু", "টেকনাফ", "উখিয়া", "পেকুয়া", "ঈদগাঁও"],
+                "ব্রাহ্মণবাড়িয়া": ["আখাউড়া", "বাঞ্ছারামপুর", "ব্রাহ্মণবাড়িয়া সদর", "কসবা", "নবীনগর", "নাসিরনগর", "সরাইল", "আশুগঞ্জ", "বিজয়নগর"],
+                "কুমিল্লা": ["বরুড়া", "ব্রাহ্মণপাড়া", "বুড়িচং", "চান্দিনা", "চৌদ্দগ্রাম", "দাউদকান্দি", "দেবীদ্বার", "হোমনা", "লাকসাম", "মুরাদনগর", "নাঙ্গলকোট", "কুমিল্লা আদর্শ সদর", "মেঘনা", "তিতাস", "মনোহরগঞ্জ", "কুমিল্লা সদর দক্ষিণ", "লালমাই"],
+                "চাঁদপুর": ["চাঁদপুর সদর", "ফরিদগঞ্জ", "হাজীগঞ্জ", "কচুয়া", "মতলব উত্তর", "মতলব দক্ষিণ", "শাহরাস্তি", "হাইমচর"],
+                "লক্ষ্মীপুর": ["লক্ষ্মীপুর সদর", "রায়পুর", "রামগঞ্জ", "রামগতি", "কমলনগর"],
+                "নোয়াখালী": ["নোয়াখালী সদর", "বেগমগঞ্জ", "চাটখিল", "কোম্পানীগঞ্জ", "হাতিয়া", "সেনবাগ", "সুবর্ণচর", "সোনাইমুড়ী", "কবিরহাট"],
+                "ফেনী": ["ছাগলনাইয়া", "দাগনভূঞা", "ফেনী সদর", "পরশুরাম", "সোনাগাজী", "ফুলগাজী"],
+                "খাগড়াছড়ি": ["দীঘিনালা", "খাগড়াছড়ি সদর", "লক্ষ্মীছড়ি", "মহালছড়ি", "মানিকছড়ি", "মাটিরাঙ্গা", "পানছড়ি", "রামগড়", "গুইমারা"],
+                "রাঙ্গামাটি": ["বাঘাইছড়ি", "বরকল", "কাউখালী", "বিলাইছড়ি", "কাপ্তাই", "জুরাছড়ি", "লংগদু", "নানিয়ারচর", "রাজস্থলী", "রাঙ্গামাটি সদর"],
+                "বান্দরবান": ["আলীকদম", "বান্দরবান সদর", "বোয়াংছড়ি", "লামা", "নাইক্ষ্যংছড়ি", "রোয়াংছড়ি", "রুমা"]
+            },
+            "রাজশাহী": {
+                "রাজশাহী": ["বাঘা", "বাগমারা", "চারঘাট", "দুর্গাপুর", "গোদাগাড়ী", "মোহনপুর", "পবা", "পুঠিয়া", "তানোর"],
+                "বগুড়া": ["আদমদীঘি", "বগুড়া সদর", "ধুনট", "দুপচাঁচিয়া", "গাবতলী", "কাহালু", "নন্দীগ্রাম", "সারিয়াকান্দি", "শেরপুর", "শিবগঞ্জ", "সোনাতলা", "শাজাহানপুর"],
+                "জয়পুরহাট": ["আক্কেলপুর", "জয়পুরহাট সদর", "কালাই", "খেতলাল", "পাঁচবিবি"],
+                "নওগাঁ": ["আত্রাই", "বদলগাছী", "মান্দা", "নিয়ামতপুর", "নওগাঁ সদর", "পত্নীতলা", "পোরশা", "রানীনগর", "সাপাহার", "ধামইরহাট", "মহাদেবপুর"],
+                "নাটোর": ["বাগাতিপাড়া", "বড়াইগ্রাম", "গুরুদাসপুর", "লালপুর", "নাটোর সদর", "সিংড়া", "নলডাঙ্গা"],
+                "চাঁপাইনবাবগঞ্জ": ["ভোলাহাট", "গোমস্তাপুর", "নাচোল", "চাঁপাইনবাবগঞ্জ সদর", "শিবগঞ্জ"],
+                "পাবনা": ["আটঘরিয়া", "বেড়া", "ভাঙ্গুরা", "চাটমোহর", "ফরিদপুর", "ঈশ্বরদী", "সাঁথিয়া", "সুজানগর", "পাবনা সদর"],
+                "সিরাজগঞ্জ": ["বেলকুচি", "চৌহালী", "কামারখন্দ", "কাজীপুর", "রায়গঞ্জ", "শাহজাদপুর", "সিরাজগঞ্জ সদর", "তাড়াশ", "উল্লাপাড়া"]
+            },
+            "খুলনা": {
+                "খুলনা": ["বটিয়াঘাটা", "দাকোপ", "ডুমুরিয়া", "দিঘলিয়া", "কয়রা", "পাইকগাছা", "রূপসা", "তেরখাদা", "ফুলতলা"],
+                "বাগেরহাট": ["বাগেরহাট সদর", "চিতলমারী", "ফকিরহাট", "কচুয়া", "মোল্লাহাট", "মোংলা", "মোড়েলগঞ্জ", "রামপাল", "শরণখোলা"],
+                "চুয়াডাঙ্গা": ["আলমডাঙ্গা", "চুয়াডাঙ্গা সদর", "দামুড়হুদা", "জীবননগর"],
+                "যশোর": ["অভয়নগর", "বাঘারপাড়া", "চৌগাছা", "ঝিকরগাছা", "কেশবপুর", "যশোর সদর", "মণিরামপুর", "শার্শা"],
+                "ঝিনাইদহ": ["হরিণাকুন্ডু", "ঝিনাইদহ সদর", "কালীগঞ্জ", "কোটচাঁদপুর", "মহেশপুর", "শৈলকুপা"],
+                "কুষ্টিয়া": ["ভেড়ামারা", "দৌলতপুর", "খোকসা", "কুমারখালী", "কুষ্টিয়া সদর", "মিরপুর"],
+                "মাগুরা": ["মাগুরা সদর", "মহম্মদপুর", "শালিখা", "শ্রীপুর"],
+                "মেহেরপুর": ["গাংনী", "মেহেরপুর সদর", "মুজিবনগর"],
+                "নড়াইল": ["কালিয়া", "লোহাগড়া", "নড়াইল সদর"],
+                "সাতক্ষীরা": ["আশাশুনি", "দেবহাটা", "কলারোয়া", "কালিগঞ্জ", "সাতক্ষীরা সদর", "শ্যামনগর", "তালা"]
+            },
+            "বরিশাল": {
+                "বরিশাল": ["আগৈলঝাড়া", "বাবুগঞ্জ", "বাকেরগঞ্জ", "বানারীপাড়া", "গৌরনদী", "হিজলা", "বরিশাল সদর", "মেহেন্দিগঞ্জ", "মুলাদী", "উজিরপুর"],
+                "বরগুনা": ["আমতলী", "বামনা", "বরগুনা সদর", "বেতাগী", "পাথরঘাটা", "তালতলী"],
+                "ভোলা": ["ভোলা সদর", "বোরহানউদ্দিন", "চরফ্যাশন", "দৌলতখান", "লালমোহন", "মনপুরা", "তজুমদ্দিন"],
+                "ঝালকাঠি": ["ঝালকাঠি সদর", "কাঁঠালিয়া", "নলছিটি", "রাজাপুর"],
+                "পটুয়াখালী": ["বাউফল", "দশমিনা", "গলাচিপা", "কলাপাড়া", "মির্জাগঞ্জ", "পটুয়াখালী সদর", "দুমকি", "রাঙ্গাবালী"],
+                "পিরোজপুর": ["ভান্ডারিয়া", "কাউখালী", "মঠবাড়িয়া", "নাজিরপুর", "পিরোজপুর সদর", "নেছারাবাদ (স্বরূপকাঠী)", "ইন্দুরকানী"]
+            },
+            "সিলেট": {
+                "সিলেট": ["বালাগঞ্জ", "বিয়ানীবাজার", "বিশ্বনাথ", "কোম্পানীগঞ্জ", "ফেঞ্চুগঞ্জ", "গোলাপগঞ্জ", "গোয়াইনঘাট", "জৈন্তাপুর", "কানাইঘাট", "সিলেট সদর", "জকিগঞ্জ", "দক্ষিণ সুরমা", "ওসমানীনগর"],
+                "হবিগঞ্জ": ["আজমিরীগঞ্জ", "বাহুবল", "বানিয়াচং", "চুনারুঘাট", "হবিগঞ্জ সদর", "লাখাই", "মাধবপুর", "নবীগঞ্জ", "শায়েস্তাগঞ্জ"],
+                "মৌলভীবাজার": ["বড়লেখা", "কমলগঞ্জ", "কুলাউড়া", "মৌলভীবাজার সদর", "রাজনগর", "শ্রীমঙ্গল", "জুড়ী"],
+                "সুনামগঞ্জ": ["বিশ্বম্ভরপুর", "ছাতক", "দিরাই", "ধরমপাশা", "দোয়ারাবাজার", "জগন্নাথপুর", "জামালগঞ্জ", "তাহিরপুর", "শাল্লা", "সুনামগঞ্জ সদর", "দক্ষিণ সুনামগঞ্জ (শান্তিগঞ্জ)", "মধ্যনগর"]
+            },
+            "রংপুর": {
+                "রংপুর": ["বদরগঞ্জ", "গংগাচড়া", "কাউনিয়া", "রংপুর সদর", "মিঠাপুকুর", "পীরগাছা", "পীরগঞ্জ", "তারাগঞ্জ"],
+                "দিনাজপুর": ["বিরামপুর", "বীরগঞ্জ", "বোচাগঞ্জ", "চিরিরবন্দর", "ফুলবাড়ী", "ঘোড়াঘাট", "হাকিমপুর", "কাহারোল", "খানসামা", "দিনাজপুর সদর", "নবাবগঞ্জ", "পার্বতীপুর", "বিরল"],
+                "গাইবান্ধা": ["ফুলছড়ি", "গাইবান্ধা সদর", "গোবিন্দগঞ্জ", "পলাশবাড়ী", "সাদুল্লাপুর", "সাঘাটা", "সুন্দরগঞ্জ"],
+                "কুড়িগ্রাম": ["ভুরুঙ্গামারী", "চর রাজিবপুর", "চিলমারী", "ফুলবাড়ী", "কুড়িগ্রাম সদর", "নাগেশ্বরী", "রাজারহাট", "রৌমারী", "উলিপুর"],
+                "লালমনিরহাট": ["আদিতমারী", "হাতীবানধা", "কালীগঞ্জ", "লালমনিরহাট সদর", "পাটগ্রাম"],
+                "নীলফামারী": ["ডিমলা", "ডোমার", "জলঢাকা", "কিশোরগঞ্জ", "নীলফামারী সদর", "সৈয়দপুর"],
+                "পঞ্চগড়": ["আটোয়ারী", "বোদা", "দেবীগঞ্জ", "পঞ্চগড় সদর", "তেঁতুলিয়া"],
+                "ঠাকুরগাঁও": ["বালিয়াডাঙ্গী", "হরিপুর", "পীরগঞ্জ", "রানীশংকৈল", "ঠাকুরগাঁও সদর"]
+            },
+            "ময়মনসিংহ": {
+                "ময়মনসিংহ": ["ত্রিশাল", "হালুয়াঘাট", "ফুলবাড়ীয়া", "গফরগাঁও", "গৌরীপুর", "ঈশ্বরগঞ্জ", "মুক্তাগাছা", "ময়মনসিংহ সদর", "নান্দাইল", "ফুলপুর", "ভালুকা", "ধোবাউড়া", "তারাকান্দা"],
+                "জামালপুর": ["বকশীগঞ্জ", "দেওয়ানগঞ্জ", "ইসলামপুর", "জামালপুর সদর", "মাদারগঞ্জ", "মেলান্দহ", "সরিষাবাড়ী"],
+                "নেত্রকোণা": ["আটপাড়া", "বরহাট্টা", "দুর্গাপুর", "খালিয়াজুরী", "কলমাকান্দা", "কেন্দুয়া", "মদন", "মোহনগঞ্জ", "নেত্রকোণা সদর", "পূর্বধলা"],
+                "শেরপুর": ["ঝিনাইগাতী", "নকলা", "নালিতাবাড়ী", "শেরপুর সদর", "শ্রীবরদী"]
+            }
+        };
+
+        const allDistricts = [];
+        for (let div in locationData) {
+            for (let dist in locationData[div]) {
+                allDistricts.push(dist);
+            }
+        }
+        allDistricts.sort(); 
+
+        const typeSelect = document.getElementById('officeType');
+        const minGroup = document.getElementById('ministryGroup');
+        const divGroup = document.getElementById('divisionGroup');
+        const distGroup = document.getElementById('districtGroup');
+        const upaGroup = document.getElementById('upazilaGroup');
+        const divSelect = document.getElementById('divisionSelect');
+        const distSelect = document.getElementById('districtSelect');
+        const upaSelect = document.getElementById('upazilaSelect');
+        const minInput = document.getElementById('ministryName');
+        const recipientText = document.getElementById('recipientText');
+
+        window.onload = function() {
+            for (let div in locationData) {
+                divSelect.innerHTML += `<option value="${div}">${div}</option>`;
+            }
+        };
+
+        function toggleRegistry() {
+            const badge = document.getElementById('registryBadge');
+            if(document.getElementById('registryCheck').checked) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function toggleAttention() {
+            const input = document.getElementById('attentionInput');
+            const wrapper = document.getElementById('attentionWrapper');
+            if(document.getElementById('attentionCheck').checked) {
+                input.classList.remove('hidden');
+                wrapper.classList.remove('hidden');
+                input.focus();
+            } else {
+                input.classList.add('hidden');
+                wrapper.classList.add('hidden');
+                input.value = "";
+                document.getElementById('attentionDisplay').innerText = "";
+            }
+        }
+
+        function updateAttention() {
+            document.getElementById('attentionDisplay').innerText = document.getElementById('attentionInput').value;
+        }
+
+        function updateDate() {
+            let dateVal = document.getElementById('datePicker').value;
+            if(dateVal) {
+                let parts = dateVal.split('-'); 
+                let formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                document.getElementById('envelopeDate').innerText = toBengaliDigits(formattedDate) + " খ্রিঃ";
+            } else {
+                document.getElementById('envelopeDate').innerText = "";
+            }
+        }
+
+        function handleOfficeChange() {
+            let type = typeSelect.value;
+            minGroup.classList.add('hidden');
+            divGroup.classList.add('hidden');
+            distGroup.classList.add('hidden');
+            upaGroup.classList.add('hidden');
+            
+            divSelect.value = "";
+            distSelect.innerHTML = '<option value="">-- জেলা নির্বাচন করুন --</option>';
+            upaSelect.innerHTML = '<option value="">-- উপজেলা নির্বাচন করুন --</option>';
+            minInput.value = "";
+            recipientText.innerHTML = "উপরের ড্রপডাউন থেকে নির্বাচন করুন...";
+
+            if (type === "DCA") { divGroup.classList.remove('hidden'); } 
+            else if (type === "CAFO") { minGroup.classList.remove('hidden'); } 
+            else if (type === "DAFO") {
+                distGroup.classList.remove('hidden');
+                distSelect.innerHTML = '<option value="">-- জেলা নির্বাচন করুন --</option>';
+                allDistricts.forEach(d => { distSelect.innerHTML += `<option value="${d}">${d}</option>`; });
+            } 
+            else if (type === "UAO") {
+                divGroup.classList.remove('hidden');
+                distGroup.classList.remove('hidden');
+                upaGroup.classList.remove('hidden');
+            }
+            generateAddress();
+        }
+
+        function handleDivisionChange() {
+            let type = typeSelect.value;
+            let div = divSelect.value;
+            if(type === "DCA") { generateAddress(); return; }
+
+            distSelect.innerHTML = '<option value="">-- জেলা নির্বাচন করুন --</option>';
+            upaSelect.innerHTML = '<option value="">-- উপজেলা নির্বাচন করুন --</option>';
+            if (div && locationData[div]) {
+                for (let dist in locationData[div]) {
+                    distSelect.innerHTML += `<option value="${dist}">${dist}</option>`;
+                }
+            }
+            generateAddress();
+        }
+
+        function handleDistrictChange() {
+            let type = typeSelect.value;
+            let div = divSelect.value;
+            let dist = distSelect.value;
+            if(type === "DAFO") { generateAddress(); return; }
+
+            upaSelect.innerHTML = '<option value="">-- উপজেলা নির্বাচন করুন --</option>';
+            if (div && dist && locationData[div][dist]) {
+                locationData[div][dist].forEach(upa => {
+                    upaSelect.innerHTML += `<option value="${upa}">${upa}</option>`;
+                });
+            }
+            generateAddress();
+        }
+
+        function generateAddress() {
+            let type = typeSelect.value;
+            let address = "";
+
+            if (type === "DCA" && divSelect.value) {
+                if(divSelect.value === "ঢাকা") {
+                    address = `<strong>ডিভিশনাল কন্ট্রোলার অব একাউন্টস্</strong><br>ডিভিশনাল কন্ট্রোলার অব একাউন্টস্ এর কার্যালয়,<br>${divSelect.value} বিভাগ, ৪৫, পুরানা পল্টন, ঢাকা-১০০০।`;
+                } else {
+                    address = `<strong>ডিভিশনাল কন্ট্রোলার অব একাউন্টস্</strong><br>ডিভিশনাল কন্ট্রোলার অব একাউন্টস্ এর কার্যালয়,<br>${divSelect.value} বিভাগ, ${divSelect.value}।`;
+                }
+            } 
+            else if (type === "CAFO" && minInput.value) {
+                address = `<strong>চিফ একাউন্টস্ এন্ড ফিন্যান্স অফিসার</strong><br>${minInput.value},<br>হিসাব ভবন, সেগুনবাগিচা, ঢাকা।`;
+            } 
+            else if (type === "DAFO" && distSelect.value) {
+                address = `<strong>জেলা একাউন্টস্ এন্ড ফিন্যান্স অফিসার</strong><br>জেলা একাউন্টস্ এন্ড ফিন্যান্স অফিসারের কার্যালয়,<br>${distSelect.value}।`;
+            } 
+            else if (type === "UAO" && upaSelect.value && distSelect.value) {
+                address = `<strong>উপজেলা হিসাবরক্ষণ কর্মকর্তা</strong><br>উপজেলা হিসাবরক্ষণ কর্মকর্তার কার্যালয়,<br>${upaSelect.value}, ${distSelect.value}।`;
+            }
+
+            if (address) {
+                recipientText.innerHTML = address;
+                recipientText.style.color = "#000"; 
+            } else {
+                recipientText.innerHTML = "উপরের ড্রপডাউন থেকে সম্পূর্ণ তথ্য নির্বাচন করুন...";
+                recipientText.style.color = "#666";
+            }
+        }
+    </script>
+</body>
+</html>
