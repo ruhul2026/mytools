@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ভ্যাট ও আয়কর ক্যালকুলেটর</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; }
+        .container { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
+        h2 { text-align: center; color: #2c3e50; border-bottom: 3px solid #007bff; padding-bottom: 10px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .result-box { margin-top: 25px; padding: 20px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 10px; display: none; }
+        .result-item { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee; }
+        .minus { color: #d9534f; font-weight: bold; }
+        .total-row { font-size: 1.3em; color: #28a745; font-weight: bold; border-top: 2px solid #444; margin-top: 10px; padding-top: 10px; border-bottom: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2> ট্যাক্স ও ভ্যাট ক্যালকুলেটর</h2>
+    
+    <div class="form-group">
+        <label for="ecoCode">অর্থনৈতিক কোড নির্বাচন করুন:</label>
+        <select id="ecoCode" onchange="updateDetails()">
+            <option value="">--নির্বাচন করুন--</option>
+            <option value="3211102">৩২১১১০২ - পরিষ্কার পরিচ্ছন্নতা সামগ্রী</option>
+            <option value="3211104">৩২১১১০৪ - আনুষঙ্গিক কর্মচারী/প্রতিষ্ঠান</option>
+            <option value="3211106">৩২১১১০৬ - আপ্যায়ন ব্যয় ও মিষ্টান্ন দ্রব্য</option>
+            <option value="3211110">৩২১১১১০ - আাইন সংক্রান্ত ব্যয়</option>
+            <option value="3211111">৩২১১১১১ - প্রশিক্ষণ/সেমিনার/কনফারেন্স ব্যয়</option>
+            <option value="3211116">৩২১১১১৬ - কুরিয়ার</option>
+            <option value="3211117">৩২১১১১৭ - ইন্টারনেট/ফ্যাক্স/টেলেক্স</option>
+            <option value="3211125">৩২১১১২৫ - প্রচার ও বিজ্ঞাপন</option>
+            <option value="3211127">৩২১১১২৭ - বইপত্র সাময়িকী</option>
+            <option value="3211128">৩২১১১২৮ - প্রকাশনা/ব্যানার</option>
+            <option value="3211129">৩২১১১২৯ - অফিস ভবন ভাড়া</option>
+            <option value="3211131">৩২১১১৩১ - আউটসোর্সিং</option>
+            <option value="3221106">৩২২১১০৬ - পরিবহন ব্যয়</option>
+            <option value="3231301">৩২৩১৩০১ - প্রশিক্ষণ ব্যয়</option>
+            <option value="3243101">৩২৪৩১০১ - পেট্রোল, অয়েল ও লুব্রিক্যান্ট</option>
+            <option value="3252104">৩২৫২১ - পথ্য সামগ্রী</option>
+            <option value="3252108">৩২৫২১০৮ - স্বাস্থ্যবিধান সামগ্রী</option>
+            <option value="3253103">৩২৫৩১০৩ - নিরাপত্তা সামগ্রী</option>
+            <option value="3255101">৩২৫৫১০১ - কম্পিউটার সামগ্রী</option>
+            <option value="3255102">৩২৫৫১০২ - মুদ্রণ ও বাধাই</option>
+            <option value="3255104">৩২৫৫১০৪ - স্ট্যাম্প ও সিল</option>
+            <option value="3255105">৩২৫৫১০৫ - অন্যান্য মনিহারি</option>
+            <option value="3256103">৩২৫৬১০৩ - ব্যবহার সামগ্রী</option>
+            <option value="3256106">৩২৫৬১০৬ - পোশাক</option>
+            <option value="3257206">৩২৫৭২০৬ - সম্মানী</option>
+            <option value="3257301">৩২৫৭৩০১ - অনুষ্ঠান/উৎসবাদি</option>
+            <option value="3258101">৩২৫৮১০১ - মোটরযান মেরামত</option>
+            <option value="3258102">৩২৫৮১০২ - আসবাবপত্র মেরামত</option>
+            <option value="3258103">৩২৫৮১০৩ - কম্পিউটার মেরামত</option>
+            <option value="3258104">৩২৫৮১০৪ - অফিস সরঞ্জামাদি মেরামত</option>
+            <option value="3258105">৩২৫৮১০৫ - অন্যান্য যন্ত্রপাতি ও সরঞ্জামাদি মেরামত</option>
+            <option value="3258106">৩২৫৮১০৬ - আবাসিক ভবন</option>
+            <option value="3258107">৩২৫৮১০৭ - অনাবাসিক ভবন</option>
+            <option value="3258108">৩২৫৮১০৮ - অন্যান্য ভবন ও স্থাপনা</option>
+            <option value="4112201">৪১১২২০১ - তথ্য ও যোগাযোগ প্রযুক্তি সরঞ্জামাদি</option>
+            <option value="4112202">৪১১২২০২ - কম্পিউটার ও আনুষঙ্গিক ক্রয়</option>
+            <option value="4112204">৪১১২২০৪ - টেলিযোগাযোগ সামগ্রী</option>
+			<option value="4112302">৪১১২৩০২ - ক্যামেরা ও আনুষঙ্গিক</option>
+            <option value="4112303">৪১১২৩০৩ - বৈদ্যুতিক সরঞ্জামাদি</option>
+            <option value="4112306">৪১১২৩০৬ - গবেষণাগার সরঞ্জামাদি</option>
+            <option value="4112310">৪১১২৩১০ - অফিস সরঞ্জামাদি</option>
+            <option value="4112314">৪১১২৩১৪ - আসবাবপত্র ক্রয়</option>
+            <option value="4112316">৪১১২৩১৬ - অন্যান্য যন্ত্রপাতি ও সরঞ্জামাদি</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>বিবরণ:</label>
+        <input type="text" id="description" readonly style="background-color: #f1f3f4;">
+    </div>
+
+    <div class="form-group">
+        <label for="totalAmount">মোট টাকার পরিমাণ (Gross):</label>
+        <input type="number" id="totalAmount" placeholder="টাকার পরিমাণ লিখুন">
+    </div>
+
+    <button onclick="calculate()">হিসাব করুন</button>
+
+    <div id="result" class="result-box">
+        <div class="result-item"><span>মোট বিল:</span> <span id="resGross"></span></div>
+        <div class="result-item"><span>আয়কর (<span id="taxRate"></span>):</span> <span id="taxVal" class="minus"></span></div>
+        <div class="result-item"><span>ভ্যাট (<span id="vatRate"></span>):</span> <span id="vatVal" class="minus"></span></div>
+        <div id="scRow" class="result-item"><span>সার্ভিস চার্জ (<span id="scRate"></span>):</span> <span id="scVal" class="minus"></span></div>
+        <div class="result-item total-row"><span>নিট প্রদেয়:</span> <span id="netVal"></span></div>
+    </div>
+</div>
+
+<script>
+    const db = {
+        "3211102": { desc: "পরিষ্কার পরিচ্ছন্নতা সামগ্রী", t: 5, v: 10, s: 0 },
+        "3211104": { desc: "আনুষঙ্গিক কর্মচারী/প্রতিষ্ঠান", t: 10, v: 15, s: 0 },
+        "3211106": { desc: "আপ্যায়ন ব্যয় ও মিষ্টান্ন দ্রব্য", t: 5, v: 10, s: 0 },
+        "3211110": { desc: "আাইন সংক্রান্ত ব্যয়", t: 10, v: 15, s: 0 },
+        "3211111": { desc: "প্রশিক্ষণ/সেমিনার/কনফারেন্স ব্যয়", t: 10, v: 0, s: 0 },
+        "3211116": { desc: "কুরিয়ার", t: 10, v: 15, s: 0 },
+        "3211117": { desc: "ইন্টারনেট/ফ্যাক্স/টেলেক্স", t: 5, v: 5, s: 0 },
+        "3211125": { desc: "প্রচার ও বিজ্ঞাপন", t: 5, v: 15, s: 3 },
+        "3211127": { desc: "বইপত্র সাময়িকী", t: 5, v: 10, s: 0 },
+        "3211128": { desc: "প্রকাশনা/ব্যানার", t: 5, v: 10, s: 0 },
+        "3211129": { desc: "অফিস ভবন ভাড়া", t: 5, v: 15, s: 0 },
+        "3211131": { desc: "আউটসোর্সিং", t: 10, v: 15, s: 0 },
+        "3221106": { desc: "পরিবহন ব্যয়", t: 5, v: 15, s: 0 },
+        "3231301": { desc: "প্রশিক্ষণ ব্যয়", t: 10, v: 15, s: 0 },
+        "3243101": { desc: "পেট্রোল, অয়েল ও লুব্রিক্যান্ট", t: 5, v: 10, s: 0 },
+        "3252104": { desc: "পথ্য সামগ্রী", t: 5, v: 10, s: 0 },
+        "3252108": { desc: "স্বাস্থ্যবিধান সামগ্রী", t: 5, v: 10, s: 0 },
+        "3253103": { desc: "নিরাপত্তা সামগ্রী", t: 5, v: 15, s: 0 },
+        "3255101": { desc: "কম্পিউটার সামগ্রী", t: 5, v: 10, s: 0 },
+        "3255102": { desc: "মুদ্রণ ও বাধাই", t: 5, v: 10, s: 0 },
+        "3255104": { desc: "স্ট্যাম্প ও সিল", t: 5, v: 10, s: 0 },
+        "3255105": { desc: "অন্যান্য মনিহারি", t: 5, v: 10, s: 0 },
+        "3256103": { desc: "ব্যবহার সামগ্রী", t: 5, v: 10, s: 0 },
+        "3256106": { desc: "পোশাক", t: 5, v: 10, s: 0 },
+        "3257206": { desc: "সম্মানী", t: 10, v: 0, s: 0 },
+        "3257301": { desc: "অনুষ্ঠান/উৎসবাদি", t: 5, v: 15, s: 0 },
+        "3258101": { desc: "মোটরযান মেরামত", t: 8, v: 10, s: 0 },
+        "3258102": { desc: "আসবাবপত্র মেরামত", t: 5, v: 15, s: 0 },
+        "3258103": { desc: "কম্পিউটার মেরামত", t: 5, v: 15, s: 0 },
+        "3258104": { desc: "অফিস সরঞ্জামাদি মেরামত", t: 5, v: 15, s: 0 },
+        "3258105": { desc: "অন্যান্য যন্ত্রপাতি ও সরঞ্জামাদি মেরামত", t: 5, v: 15, s: 0 },
+        "3258106": { desc: "আবাসিক ভবন", t: 5, v: 15, s: 0 },
+        "3258107": { desc: "অনাবাসিক ভবন", t: 5, v: 15, s: 0 },
+        "3258108": { desc: "অন্যান্য ভবন ও স্থাপনা", t: 5, v: 15, s: 0 },
+        "4112201": { desc: "তথ্য ও যোগাযোগ প্রযুক্তি সরঞ্জামাদি", t: 5, v: 10, s: 0 },
+        "4112202": { desc: "কম্পিউটার ও আনুষঙ্গিক ক্রয়", t: 5, v: 10, s: 0 },
+        "4112204": { desc: "টেলিযোগাযোগ সামগ্রী", t: 5, v: 10, s: 0 },
+		 "4112302": { desc: "ক্যামেরা ও আনুষঙ্গিক", t: 5, v: 10, s: 0 },
+        "4112303": { desc: "বৈদ্যুতিক সরঞ্জামাদি", t: 5, v: 10, s: 0 },
+        "4112306": { desc: "গবেষণাগার সরঞ্জামাদি", t: 5, v: 10, s: 0 },
+        "4112310": { desc: "অফিস সরঞ্জামাদি", t: 5, v: 10, s: 0 },
+        "4112314": { desc: "আসবাবপত্র ক্রয়", t: 5, v: 15, s: 0 },
+        "4112316": { desc: "অন্যান্য যন্ত্রপাতি ও সরঞ্জামাদি", t: 5, v: 10, s: 0 }
+    };
+
+    function updateDetails() {
+        const code = document.getElementById("ecoCode").value;
+        document.getElementById("description").value = db[code] ? db[code].desc : "";
+    }
+
+    function calculate() {
+        const code = document.getElementById("ecoCode").value;
+        const gross = parseFloat(document.getElementById("totalAmount").value);
+        if (!code || isNaN(gross)) { alert("সঠিক তথ্য দিন"); return; }
+
+        const data = db[code];
+        const tax = (gross * data.t) / 100;
+        const vat = (gross * data.v) / 100;
+        const sc = (gross * data.s) / 100;
+        const net = gross - (tax + vat + sc);
+
+        document.getElementById("taxRate").innerText = data.t + "%";
+        document.getElementById("vatRate").innerText = data.v + "%";
+        document.getElementById("scRate").innerText = data.s + "%";
+
+        document.getElementById("resGross").innerText = gross.toLocaleString() + " টাকা";
+        document.getElementById("taxVal").innerText = "- " + tax.toLocaleString();
+        document.getElementById("vatVal").innerText = "- " + vat.toLocaleString();
+        document.getElementById("scVal").innerText = "- " + sc.toLocaleString();
+        document.getElementById("netVal").innerText = net.toLocaleString() + " টাকা";
+
+        document.getElementById("scRow").style.display = data.s > 0 ? "flex" : "none";
+        document.getElementById("result").style.display = "block";
+    }
+</script>
+</body>
+</html>
