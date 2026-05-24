@@ -76,8 +76,37 @@
 
     <iframe id="content-frame"></iframe>
 </div>
+    <div id="contactModal" class="modal">
+    <h2>যোগাযোগের তথ্য</h2>
+    <p><strong>Developed by:</strong> Md. Ruhul Amin, Auditor</p>
+    <p><strong>Whatsapp:</strong> +8801626-537929</p>
+    <button class="close-btn" onclick="closeModal()">বন্ধ করুন</button>
+</div>
 
 <script>
+    function loadPage(url) {
+        var frame = document.getElementById('content-frame');
+        document.getElementById('contactModal').style.display = 'none';
+        frame.src = url;
+        frame.style.display = 'block';
+    }
+    
+    function showHome() {
+        var frame = document.getElementById('content-frame');
+        document.getElementById('contactModal').style.display = 'none';
+        frame.style.display = 'none';
+        frame.src = '';
+    }
+
+    function showModal() {
+        document.getElementById('contactModal').style.display = 'block';
+        document.getElementById('content-frame').style.display = 'none';
+    }
+
+    function closeModal() {
+        document.getElementById('contactModal').style.display = 'none';
+    }
+
     function loadPage(url) {
         var frame = document.getElementById('content-frame');
         frame.src = url;
