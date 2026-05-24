@@ -3,78 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমার টুলস ম্যানেজমেন্ট - হোম</title>
+    <title>আমার টুলস ম্যানেজমেন্ট</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Hind Siliguri', sans-serif;
-            background-color: #f4f7f6;
+            background-image: url('ruhul.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
             min-height: 100vh;
-        }
-        .container {
-            width: 90%;
-            max-width: 1000px;
-            text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        h1 { color: #2c3e50; margin-bottom: 30px; }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: #ffffff;
-            border: 2px solid #e0e0e0;
-            padding: 25px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            font-size: 18px;
-            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 1100px; /* কন্টেইনারের প্রস্থ বাড়ানো হয়েছে */
+            text-align: center;
+            margin-top: 20px;
+        }
+        h1 { color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); margin-bottom: 20px; }
+        
+        .menu-bar {
+            display: flex;
             justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
         }
-        .card:hover {
-            border-color: #3498db;
-            color: #3498db;
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        .menu-bar a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 15px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            transition: 0.3s;
         }
-        .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+        .menu-bar a:hover { background-color: #3498db; color: white; }
+
+        /* আইফ্রেম এরিয়া - উচ্চতা বাড়ানো হয়েছে যাতে সবকিছু দেখা যায় */
+        #content-frame {
+            width: 100%;
+            height: 80vh; /* স্ক্রিনের উচ্চতার ৮০% জায়গা দখল করবে */
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1> আপনাকে এই পেজে স্বাগতম </h1>
-    <div class="grid-container">
-
-        <a href="GPF Subledger.html" class="card">
-            <div class="icon">📝</div>
-           জিপিএফ হিসাব
-        </a>
-     
-      <a href="envelop.html" class="card">
-            <div class="icon">✉️</div>
-            খাম
-        </a>
+    <h1>আমার সার্ভিস পোর্টাল</h1>
+    
+    <div class="menu-bar">
+        <a href="#" onclick="showHome()">🏠 হোম</a>
+        <a href="#" onclick="loadPage('GPF Subledger.html')">✉️ জিপিএফ হিসাব </a>
+    
+        <a href="#" onclick="loadPage('envelop.html')">✉️ খাম </a>
     </div>
+
+    <iframe id="content-frame"></iframe>
 </div>
+
+<script>
+    function loadPage(url) {
+        var frame = document.getElementById('content-frame');
+        frame.src = url;
+        frame.style.display = 'block';
+    }
+    
+    function showHome() {
+        var frame = document.getElementById('content-frame');
+        frame.style.display = 'none';
+        frame.src = '';
+    }
+</script>
 
 </body>
 </html>
